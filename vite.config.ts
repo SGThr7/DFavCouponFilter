@@ -9,9 +9,15 @@ export default defineConfig({
     monkey({
       entry: 'src/main.ts',
       userscript: {
-        icon: 'https://vitejs.dev/logo.svg',
-        namespace: 'npm/vite-plugin-monkey',
-        match: ['https://www.google.com/'],
+        name: 'DFavCouponMatcher',
+        author: 'SGThr7',
+        description: {
+          '': 'DLsite内のお気に入り作品一覧で、クーポン対象の作品のみを絞り込みます',
+        },
+        version: '0.0.1',
+        license: 'MIT',
+        namespace: 'sgthr7/monkey-script',
+        match: ['https://www.dlsite.com/*'],
       },
       build: {
         externalGlobals: {
