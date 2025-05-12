@@ -1,35 +1,42 @@
 <template>
 	<div class="wrapper">
-		<CouponCheckbox v-for="coupon of coupons" :key="coupon.getId()" :coupon="coupon" @on-checked="onCouponChecked">
-		</CouponCheckbox>
+		<!-- TODO: 対象が0のクーポンも別途表示する。(自動ページ送りを併用する際にあったほうがいい) -->
+		<template v-for="coupon of coupons">
+			<CouponCheckbox v-if="getDiscountableCount(coupon) > 0" :key="coupon.getId()" :coupon="coupon"
+				:discountTargetCount="getDiscountableCount(coupon)" @on-checked="onCouponChecked">
+			</CouponCheckbox>
+		</template>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { fetchCoupons } from '../lib/d_lib'
-import CouponCheckbox from './CouponCheckbox.vue'
-import { DCoupon, DProductVisibilityManager } from '../lib/DProduct'
-import { onBeforeUnmount } from 'vue'
+import { computed, onBeforeUnmount, Reactive, reactive } from 'vue'
+import { DCoupon, DPCManager } from '@/lib/dlsite/payload'
+import CouponCheckbox from '@/components/CouponCheckbox.vue'
 
-const dProductManager = new DProductVisibilityManager()
+const dpcManager: Reactive<DPCManager> = reactive(new DPCManager())
+dpcManager.init()
 
-const allCoupons = await fetchCoupons()
-const coupons = allCoupons.values()
-	.map(couponData => new DCoupon(couponData))
-	.filter(coupon => coupon.isAvailable())
-	.toArray()
+onBeforeUnmount(() => {
+	dpcManager.clear()
+})
+
+
+const _ = await dpcManager.asyncWaitFetchCoupons()
+
+const coupons = computed(() => dpcManager.getCoupons())
+
+function getDiscountableCount(coupon: DCoupon): number {
+	return dpcManager.getDiscountableCouponMap(coupon.getId()).size
+}
 
 function onCouponChecked(isChecked: boolean, coupon: DCoupon) {
 	if (isChecked) {
-		dProductManager.addCouponFilter(coupon)
+		dpcManager.addCouponFilter(coupon.getId())
 	} else {
-		dProductManager.removeCouponFilter(coupon)
+		dpcManager.removeCouponFilter(coupon.getId())
 	}
 }
-
-onBeforeUnmount(() => {
-	dProductManager.clear()
-})
 </script>
 
 <style scoped>

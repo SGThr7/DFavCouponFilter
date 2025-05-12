@@ -12,5 +12,5 @@
 </template>
 
 <script setup lang="ts">
-import AsyncCouponList from './AsyncCouponList.vue';
+import AsyncCouponList from '@/components/AsyncCouponList.vue'
 </script>

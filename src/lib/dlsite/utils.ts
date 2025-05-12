@@ -1,4 +1,4 @@
-import { CouponData, CouponId, Coupons, ProductId, Products } from "../type/coupon.type"
+import { CouponData, CouponId, Coupons, ProductId, Products } from '@/type/coupon.type'
 
 export async function fetchCoupons() {
 	const couponsUrl = 'https://www.dlsite.com/maniax/api/=/coupon.json'

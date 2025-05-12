@@ -1,5 +1,5 @@
 import { createApp } from 'vue';
-import CouponFilter from './components/CouponFilter.vue';
+import CouponFilter from '@/components/CouponFilter.vue';
 import './style.css';
 
 main()

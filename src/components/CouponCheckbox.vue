@@ -3,23 +3,23 @@
 		<label>
 			<input type="checkbox" @change="onChecked">
 			<span>
-				{{ name }}
+				{{ name }} ({{ discountTargetCount }})
 			</span>
 		</label>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { DCoupon } from '../lib/DProduct';
+import { computed } from 'vue'
+import { DCoupon } from '@/lib/dlsite/payload'
 
 interface Props {
 	coupon: DCoupon
+	discountTargetCount: number
 }
 
 const { coupon } = defineProps<Props>()
 
-const id = computed(() => coupon.getId())
 const name = computed(() => coupon.getName())
 
 const emit = defineEmits<{
