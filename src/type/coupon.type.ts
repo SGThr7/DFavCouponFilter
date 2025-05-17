@@ -51,7 +51,11 @@ export interface PriceSumObj {
 	is_set_coupon_ng: boolean
 }
 
-export type DiscountType = 'rate' | 'price'
+export const enum DiscountTypeEnum {
+	Rate = 'rate',
+	Price = 'price',
+}
+export type DiscountType = typeof DiscountTypeEnum[keyof typeof DiscountTypeEnum]
 
 // "発行"という意味でのIssue
 export interface Issue {

@@ -1,4 +1,5 @@
-import { CouponData, CouponId } from "../../type/coupon.type"
+import { CouponData, CouponId, DiscountType } from "../../type/coupon.type"
+import { compare as compareDiscountType } from "./coupon/utils"
 import { DProduct } from "./payload"
 
 export class DCoupon {
@@ -18,6 +19,10 @@ export class DCoupon {
 
 	getDiscountRate() {
 		return this.info.discount
+	}
+
+	getDiscountType(): DiscountType {
+		return this.info.discount_type
 	}
 
 	/**
@@ -62,5 +67,17 @@ export class DCoupon {
 		})
 
 		return testProductAll || await testCustomGenre
+	}
+
+	compare(other: DCoupon): number {
+		const cmpDiscountType = compareDiscountType(this.getDiscountType(), other.getDiscountType())
+		if (cmpDiscountType !== 0) return cmpDiscountType
+
+		const cmpDiscount = other.getDiscountRate() - this.getDiscountRate()
+		if (cmpDiscount !== 0) return cmpDiscount
+
+		const maxDate = new Date(8.64e15)
+		const cmpLimitDate = (this.getUserLimitDate() ?? maxDate).getTime() - (other.getUserLimitDate() ?? maxDate).getTime()
+		return cmpLimitDate
 	}
 }

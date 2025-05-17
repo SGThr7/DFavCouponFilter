@@ -8,7 +8,7 @@
 			</CouponCheckbox>
 		</div>
 
-		<CollapseMenu class="no-target-coupons" v-if="noDiscountCoupons.size > 0">
+		<CollapseMenu class="no-target-coupons" v-if="noDiscountCoupons.length > 0">
 			<template #title>割引対象無しクーポン一覧</template>
 
 			<div class="coupons">
@@ -36,10 +36,19 @@ onBeforeUnmount(() => {
 
 const _ = await dpcManager.asyncWaitFetchCoupons()
 
-// TODO: 割引率で並び替える
 const allCoupons = computed(() => dpcManager.getCoupons())
-const discountCoupons = computed(() => new Set(Iterator.from(allCoupons.value.values()).filter(coupon => getDiscountableCount(coupon) > 0)))
-const noDiscountCoupons = computed(() => new Set(Iterator.from(allCoupons.value.values()).filter(coupon => getDiscountableCount(coupon) === 0)))
+const discountCoupons = computed(() => (
+	Iterator.from(allCoupons.value.values())
+		.filter(coupon => getDiscountableCount(coupon) > 0)
+		.toArray()
+		.sort((a, b) => a.compare(b))
+))
+const noDiscountCoupons = computed(() => (
+	Iterator.from(allCoupons.value.values())
+		.filter(coupon => getDiscountableCount(coupon) === 0)
+		.toArray()
+		.sort((a, b) => a.compare(b))
+))
 
 function getDiscountableCount(coupon: DCoupon): number {
 	return dpcManager.getDiscountableCouponMap(coupon.getId()).size
