@@ -1,6 +1,7 @@
 import { CouponData, CouponId, Coupons, ProductId, Products } from '@/type/coupon.type'
 
 export async function fetchCoupons() {
+	// TODO: 取得が漏れているクーポンがいくつかある
 	const couponsUrl = 'https://www.dlsite.com/maniax/api/=/coupon.json'
 	const couponsRaw = await fetch(couponsUrl)
 

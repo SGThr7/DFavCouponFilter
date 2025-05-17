@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "5.2.4",
+    "sass-embedded": "^1.88.0",
     "typescript": "5.8.3",
     "vite": "6.3.5",
     "vite-plugin-monkey": "5.0.8",

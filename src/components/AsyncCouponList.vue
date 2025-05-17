@@ -1,11 +1,22 @@
 <template>
 	<div class="wrapper">
-		<!-- TODO: 対象が0のクーポンも別途表示する。(自動ページ送りを併用する際にあったほうがいい) -->
-		<template v-for="coupon of coupons">
-			<CouponCheckbox v-if="getDiscountableCount(coupon) > 0" :key="coupon.getId()" :coupon="coupon"
+		<div v-if="allCoupons.size <= 0">所持クーポン無し</div>
+
+		<div class="coupons">
+			<CouponCheckbox v-for="coupon of discountCoupons" :key="coupon.getId()" :coupon="coupon"
 				:discountTargetCount="getDiscountableCount(coupon)" @on-checked="onCouponChecked">
 			</CouponCheckbox>
-		</template>
+		</div>
+
+		<CollapseMenu class="no-target-coupons" v-if="noDiscountCoupons.size > 0">
+			<template #title>割引対象無しクーポン一覧</template>
+
+			<div class="coupons">
+				<CouponCheckbox v-for="coupon of noDiscountCoupons" :key="coupon.getId()" :coupon="coupon"
+					:discountTargetCount="getDiscountableCount(coupon)" @on-checked="onCouponChecked">
+				</CouponCheckbox>
+			</div>
+		</CollapseMenu>
 	</div>
 </template>
 
@@ -13,6 +24,7 @@
 import { computed, onBeforeUnmount, Reactive, reactive } from 'vue'
 import { DCoupon, DPCManager } from '@/lib/dlsite/payload'
 import CouponCheckbox from '@/components/CouponCheckbox.vue'
+import CollapseMenu from '@/components/CollapseMenu.vue'
 
 const dpcManager: Reactive<DPCManager> = reactive(new DPCManager())
 dpcManager.init()
@@ -24,7 +36,10 @@ onBeforeUnmount(() => {
 
 const _ = await dpcManager.asyncWaitFetchCoupons()
 
-const coupons = computed(() => dpcManager.getCoupons())
+// TODO: 割引率で並び替える
+const allCoupons = computed(() => dpcManager.getCoupons())
+const discountCoupons = computed(() => new Set(Iterator.from(allCoupons.value.values()).filter(coupon => getDiscountableCount(coupon) > 0)))
+const noDiscountCoupons = computed(() => new Set(Iterator.from(allCoupons.value.values()).filter(coupon => getDiscountableCount(coupon) === 0)))
 
 function getDiscountableCount(coupon: DCoupon): number {
 	return dpcManager.getDiscountableCouponMap(coupon.getId()).size
@@ -40,8 +55,12 @@ function onCouponChecked(isChecked: boolean, coupon: DCoupon) {
 </script>
 
 <style scoped>
-.wrapper {
+.coupons {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.no-target-coupons {
+	margin-top: 20px;
 }
 </style>
