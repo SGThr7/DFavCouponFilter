@@ -1,12 +1,13 @@
-import { ProductData, ProductId } from '@/type/coupon.type'
+import { ProductInfo, ProductId } from '@/type/dlsite/product'
 import { fetchProductInfo } from '@/lib/dlsite/utils'
 import { parseId, parseTitle } from './product/utils'
+import { SiteId_Lower } from '@/type/dlsite/site'
 
 export class DProduct {
 	private id: ProductId
 	// TODO: 自動ページ送り拡張などを使うとDOMが複数になることがあるため、複数DOMを操作できるようにしたい
 	private dom: HTMLElement
-	private info: ProductData | undefined
+	private info: ProductInfo | undefined
 
 	private promiseFetchInfo: Promise<void> | undefined
 
@@ -90,6 +91,16 @@ export class DProduct {
 	getCustomGenresCache(): Readonly<string[]> {
 		console.assert(this.info != null, 'Product info has not been fetched yet')
 		return this.info?.custom_genres ?? []
+	}
+
+	async getSiteId(): Promise<SiteId_Lower> {
+		await this.asyncFetchInfo()
+		return this.getSiteIdCache()!
+	}
+
+	getSiteIdCache(): SiteId_Lower | undefined {
+		console.assert(this.info != null, 'Product info has not been fetched yet')
+		return this.info?.site_id
 	}
 
 	getDom(): HTMLElement {

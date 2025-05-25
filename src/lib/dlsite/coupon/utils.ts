@@ -1,30 +1,33 @@
-import { DiscountTypeEnum } from '@/type/coupon.type'
+import { DiscountType } from '@/type/dlsite/coupon'
 
-export function compare(a: DiscountTypeEnum, b: DiscountTypeEnum): number {
+export function compareDiscountType(a: DiscountType, b: DiscountType): number {
 	switch (a) {
-		case DiscountTypeEnum.Rate: {
+		case 'rate': {
 			switch (b) {
-				case DiscountTypeEnum.Rate: {
+				case 'rate': {
 					// keep
 					return 0
 				}
-				case DiscountTypeEnum.Price: {
+				case 'price': {
 					// a, b
 					return -1
 				}
 			}
 		}
-		case DiscountTypeEnum.Price: {
+		case 'price': {
 			switch (b) {
-				case DiscountTypeEnum.Rate: {
+				case 'rate': {
 					// b, a
 					return 1
 				}
-				case DiscountTypeEnum.Price: {
+				case 'price': {
 					// keep
 					return 0
 				}
 			}
 		}
 	}
+
+	console.trace(`Unexpected discount type (${a}, ${b})`)
+	return 0
 }

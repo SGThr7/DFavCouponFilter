@@ -1,8 +1,9 @@
-import { CouponId, Coupons, ProductId } from '@/type/coupon.type'
+import { CouponId, Coupons } from '@/type/dlsite/coupon'
+import { ProductId } from '@/type/dlsite/product'
 import { OrBooleans } from '@/lib/MultiFactorBooleans'
-import { fetchCoupons, findProductId } from './utils'
 import { DCoupon } from './coupon'
 import { DProduct } from './product'
+import { fetchCoupons, findProductId } from './utils'
 
 export class DPCManager {
 	static readonly WISHLIST_CONTAINER_ID = 'edit_wishlist'

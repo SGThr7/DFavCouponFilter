@@ -1,5 +1,6 @@
 <template>
 	<div class="wrapper">
+		<!-- TODO: 処理中の作品数を表示したほうがわかりやすそう -->
 		<div v-if="allCoupons.size <= 0">所持クーポン無し</div>
 
 		<div class="coupons">

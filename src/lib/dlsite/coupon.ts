@@ -1,24 +1,24 @@
-import { CouponData, CouponId, DiscountType } from "../../type/coupon.type"
-import { compare as compareDiscountType } from "./coupon/utils"
+import { Coupon, DiscountType } from '@/type/dlsite/coupon'
+import { compareDiscountType as compareDiscountType } from "./coupon/utils"
 import { DProduct } from "./payload"
 
 export class DCoupon {
-	private info: CouponData
+	private info: Coupon
 
-	constructor(info: CouponData) {
+	constructor(info: Coupon) {
 		this.info = info
 	}
 
-	getId(): CouponId {
+	getId(): string {
 		return this.info.coupon_id
 	}
 
-	getName() {
+	getName(): string {
 		return this.info.coupon_name
 	}
 
-	getDiscountRate() {
-		return this.info.discount
+	getDiscountRate(): number {
+		return parseInt(this.info.discount)
 	}
 
 	getDiscountType(): DiscountType {
@@ -28,13 +28,10 @@ export class DCoupon {
 	/**
 	 * @return クーポンの使用期限
 	 */
-	getUserLimitDate() {
-		const limitDateRaw = this.info.user_limit_date
-		if (limitDateRaw == null) {
-			return null
-		}
-
-		const limitDate = new Date(limitDateRaw)
+	getUseLimitDate(): Date {
+		const limitDateSec = this.info.limit_date
+		const limitDateMsec = limitDateSec * 1e3
+		const limitDate = new Date(limitDateMsec)
 		return limitDate
 	}
 
@@ -42,9 +39,10 @@ export class DCoupon {
 	 * @returns 有効なクーポンかどうか
 	 */
 	isAvailable() {
-		const hasPresented = this.info.issue.regist_present?.regist_present ?? false
+		// 配布されたかどうかを判断する方法がない
+		const hasPresented = true
 
-		const limitDate = this.getUserLimitDate()
+		const limitDate = this.getUseLimitDate()
 		const currentDate = new Date()
 		const isInLimitDate = limitDate != null ? currentDate <= limitDate : false
 
@@ -56,17 +54,26 @@ export class DCoupon {
 	 * @returns クーポン対象の作品かどうか
 	 */
 	async canDiscount(product: DProduct) {
-		const testProductAll = this.info.condition.product_all?.some(productId =>
-			productId === product.getId()
-		) ?? false
+		switch (this.info.condition_type) {
+			case 'id_all': {
+				return this.info.conditions.product_all?.some(productId =>
+					productId === product.getId()
+				) ?? false
+			}
+			case 'custom_genre': {
+				const pGenres = await product.asyncGetCustomGenres()
+				return this.info.conditions.custom_genre?.some(cGenre =>
+					pGenres.some(pGenre => cGenre === pGenre)
+				) ?? false
+			}
+			case 'site_ids': {
+				const pSiteId = await product.getSiteId()
+				return this.info.conditions.site_ids?.includes(pSiteId) ?? false
+			}
+		}
 
-		const testCustomGenre = new Promise<boolean>(async (resolve) => {
-			const pGenres = await product.asyncGetCustomGenres()
-			const res = this.info.condition.custom_genre?.some(cGenre => pGenres.some(pGenre => cGenre === pGenre)) ?? false
-			resolve(res)
-		})
-
-		return testProductAll || await testCustomGenre
+		console.trace(`Unexpected condition type "${this.info.condition_type}"`)
+		return false
 	}
 
 	compare(other: DCoupon): number {
@@ -77,7 +84,7 @@ export class DCoupon {
 		if (cmpDiscount !== 0) return cmpDiscount
 
 		const maxDate = new Date(8.64e15)
-		const cmpLimitDate = (this.getUserLimitDate() ?? maxDate).getTime() - (other.getUserLimitDate() ?? maxDate).getTime()
+		const cmpLimitDate = (this.getUseLimitDate() ?? maxDate).getTime() - (other.getUseLimitDate() ?? maxDate).getTime()
 		return cmpLimitDate
 	}
 }

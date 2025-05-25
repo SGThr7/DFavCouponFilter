@@ -1,8 +1,9 @@
-import { CouponData, CouponId, Coupons, ProductId, Products } from '@/type/coupon.type'
+import { Coupons, Coupon, CouponId } from '@/type/dlsite/coupon'
+import { ProductInfoMap, ProductId } from '@/type/dlsite/product'
 
 export async function fetchCoupons() {
 	// TODO: 取得が漏れているクーポンがいくつかある
-	const couponsUrl = 'https://www.dlsite.com/maniax/api/=/coupon.json'
+	const couponsUrl = 'https://www.dlsite.com/books/mypage/coupon/list/ajax'
 	const couponsRaw = await fetch(couponsUrl)
 
 	if (!couponsRaw.ok) {
@@ -17,7 +18,7 @@ export async function fetchCoupons() {
 export function filterAvailableCoupons(coupons: Readonly<Coupons>) {
 	const availableCoupons = coupons
 		.values()
-		.filter(coupon => coupon.issue.regist_present)
+		.filter(coupon => coupon.issues.regist_present)
 
 	return availableCoupons.toArray() as Coupons
 }
@@ -30,7 +31,7 @@ export async function fetchProductInfo(productId: ProductId) {
 		throw new Error(`Failed to fetch product info: ${productInfoUrl}`)
 	}
 
-	const products: Products = await productInfoRaw.json()
+	const products: ProductInfoMap = await productInfoRaw.json()
 	const productInfo = products[productId]
 
 	return productInfo
@@ -40,7 +41,7 @@ export async function findCoupons(coupons: Readonly<Coupons>, product_id: Produc
 	// 対象クーポン
 	let targetCoupons = new Set<CouponId>()
 
-	const appendCoupons = (coupons: IteratorObject<CouponData>) => {
+	const appendCoupons = (coupons: IteratorObject<Coupon>) => {
 		coupons
 			.map(coupon => coupon.coupon_id)
 			.forEach(coupon_id => targetCoupons.add(coupon_id))
@@ -50,7 +51,7 @@ export async function findCoupons(coupons: Readonly<Coupons>, product_id: Produc
 	{
 		let targetCouponsProductId = coupons
 			.values()
-			.filter(coupon => coupon.condition.product_id?.includes(product_id))
+			.filter(coupon => coupon.conditions.product_all?.includes(product_id))
 
 		// クーポンを記録
 		appendCoupons(targetCouponsProductId)
@@ -64,7 +65,7 @@ export async function findCoupons(coupons: Readonly<Coupons>, product_id: Produc
 	// カスタムジャンルクーポン
 	if (productInfo != null) {
 		let targetCouponsCustomGenre = coupons.values()
-			.filter(coupon => productInfo.custom_genres.some(genre => coupon.condition.custom_genre?.includes(genre)))
+			.filter(coupon => productInfo.custom_genres.some(genre => coupon.conditions.custom_genre?.includes(genre)))
 
 		// クーポンを記録
 		appendCoupons(targetCouponsCustomGenre)
@@ -77,7 +78,7 @@ export async function findAnyCoupon(coupons: Readonly<Coupons>, product_id: Prod
 	// 作品ごとクーポン
 	const targetCouponsProductId = coupons
 		.values()
-		.find(coupon => coupon.condition.product_id?.includes(product_id))
+		.find(coupon => coupon.conditions.product_all?.includes(product_id))
 	if (targetCouponsProductId != null) return targetCouponsProductId
 
 	const productInfo = await fetchProductInfo(product_id).catch(err => {
@@ -89,7 +90,7 @@ export async function findAnyCoupon(coupons: Readonly<Coupons>, product_id: Prod
 	// カスタムジャンルクーポン
 	const targetCouponsCustomGenre = coupons
 		.values()
-		.find(coupon => productInfo.custom_genres.some(genre => coupon.condition.custom_genre?.includes(genre))) ?? null
+		.find(coupon => productInfo.custom_genres.some(genre => coupon.conditions.custom_genre?.includes(genre))) ?? null
 	return targetCouponsCustomGenre
 }
 

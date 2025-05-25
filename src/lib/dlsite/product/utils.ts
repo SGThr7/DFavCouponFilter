@@ -1,4 +1,4 @@
-import { ProductId } from "@/type/coupon.type"
+import { ProductId } from '@/type/dlsite/product'
 
 /**
  * 作品固有のIDを取得します
@@ -18,7 +18,7 @@ export function parseId(productDom: HTMLElement): ProductId | null {
 		return null
 	}
 
-	return productId
+	return productId as ProductId
 }
 
 /**

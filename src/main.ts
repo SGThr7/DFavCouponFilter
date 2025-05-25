@@ -5,7 +5,7 @@ import './style.css';
 main()
 
 function main() {
-	const bookmarkUrlPattern = new RegExp('^https?://(www.)?dlsite.com/(\\w+)/mypage/wishlist/.*', 'i')
+	const bookmarkUrlPattern = new RegExp('^https?://(www.)?dlsite.com/(\\w+)/mypage/wishlist/?.*', 'i')
 	const currentUrl = window.location.href
 
 	if (bookmarkUrlPattern.test(currentUrl)) {
