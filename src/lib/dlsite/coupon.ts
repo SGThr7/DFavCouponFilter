@@ -72,6 +72,7 @@ export class DCoupon {
 			}
 		}
 
+		// @ts-ignore
 		console.trace(`Unexpected condition type "${this.info.condition_type}"`)
 		return false
 	}
