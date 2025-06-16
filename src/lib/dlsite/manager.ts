@@ -1,9 +1,10 @@
 import { CouponId, Coupons } from '@/type/dlsite/coupon'
-import { ProductId } from '@/type/dlsite/product'
+import { ProductId, ProductInfoMap } from '@/type/dlsite/product'
 import { OrBooleans } from '@/lib/MultiFactorBooleans'
 import { DCoupon } from './coupon'
 import { DProduct } from './product'
-import { fetchCoupons, findProductId } from './utils'
+import { fetchCoupons, fetchProductInfos, parseProductId } from './utils'
+import { isValidEntryKey, objEntryIter } from '@/lib/utils'
 
 export class DPCManager {
 	static readonly WISHLIST_CONTAINER_ID = 'edit_wishlist'
@@ -65,6 +66,33 @@ export class DPCManager {
 			this.products.set(productId, product)
 			this.couponFilter.set(productId, new OrBooleans())
 		}
+	}
+
+	/**
+	 * 作品を管理対象へ追加
+	 * @param products 追加する作品のリスト
+	 */
+	registerProducts(products: DProduct[]) {
+		const productIds = Iterator.from(products.values())
+			.map(product => product.getId())
+			.toArray()
+
+		const mapProducts = ([productIds, info]: ObjEntry<ProductInfoMap>) => (
+			[this.products.get(productIds), info] as [DProduct | undefined, ValueOf<ProductInfoMap>]
+		)
+		const fetchPromise = fetchProductInfos(productIds)
+			.then(infos => {
+				objEntryIter(infos)
+					.map(mapProducts)
+					.filter(isValidEntryKey)
+					.forEach(([product, info]) => product.setInfo(info))
+			})
+
+		Iterator.from(products.values())
+			.forEach(product => {
+				this.registerProduct(product)
+				product.registerFetchInfoPromise(fetchPromise)
+			})
 	}
 
 	async asyncInitLink() {
@@ -185,7 +213,7 @@ export class DPCManager {
 		const productDomsIter = products
 			.values()
 			.map<[ProductId, HTMLElement] | null>(content => {
-				const product_id = findProductId(content)
+				const product_id = parseProductId(content)
 				if (product_id == null) {
 					console.error('Failed to find product ID', content)
 					return null

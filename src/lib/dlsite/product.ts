@@ -63,6 +63,24 @@ export class DProduct {
 		this.dom.hidden = !isVisible
 	}
 
+	// MARK: Info (async)
+
+	/**
+	 * @note `async`版は`asyncFetchInfo()`を使用する
+	 */
+	getInfo() {
+		return this.info
+	}
+
+	setInfo(val: NonNullable<typeof this.info>) {
+		this.info = val
+	}
+
+	// 外部からPromiseを登録する
+	registerFetchInfoPromise(promise: Promise<void>) {
+		this.promiseFetchInfo = promise
+	}
+
 	// MARK: Accessor
 
 	getId(): ProductId {
