@@ -11,7 +11,7 @@ export default defineConfig({
     monkey({
       entry: 'src/main.ts',
       userscript: {
-        name: 'DFavCouponMatcher',
+        name: 'DFavCouponFilter',
         author: 'SGThr7',
         description: {
           '': 'DLsite内のお気に入り作品一覧で、クーポン対象の作品のみをフィルターする機能を追加します',
