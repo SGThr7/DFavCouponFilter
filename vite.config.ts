@@ -14,7 +14,7 @@ export default defineConfig({
         name: 'DFavCouponMatcher',
         author: 'SGThr7',
         description: {
-          '': 'DLsite内のお気に入り作品一覧で、クーポン対象の作品のみを絞り込みます',
+          '': 'DLsite内のお気に入り作品一覧で、クーポン対象の作品のみをフィルターする機能を追加します',
         },
         version: '0.0.1',
         license: 'MIT',
