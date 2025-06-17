@@ -6,6 +6,7 @@ on:
       version_tag:
         required: true
         type: string
+        default: v0.0.0
       dist_file_name:
         required: true
         type: string

@@ -16,7 +16,7 @@ export default defineConfig({
         description: {
           '': 'DLsite内のお気に入り作品一覧で、クーポン対象の作品のみをフィルターする機能を追加します',
         },
-        version: '0.0.1',
+        version: '0.0.2',
         license: 'MIT',
         namespace: 'sgthr7/monkey-script',
         match: ['https://www.dlsite.com/*'],
