@@ -1,23 +1,22 @@
 <template>
 	<div>
-		<button type="button" :class="style.expand_button" :aria-expanded="isExpanded" :aria-controls="contentId"
+		<button type="button" class="expand_button" :aria-expanded="isExpanded" :aria-controls="contentId"
 			@click="onClickButton">
 			<slot name="title">
 				表示切り替え
 			</slot>
-			<img :src="CollapseIconFile" :class="style.expand_icon">
+			<img :src="CollapseIconFile" class="expand_icon">
 		</button>
-		<div :id="contentId" :class="style.content">
+		<div :id="contentId" class="content">
 			<slot></slot>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { ref, useCssModule, useId } from 'vue'
+import { ref, useId } from 'vue'
 import CollapseIconFile from '@/assets/collapse_icon.svg'
 
-const style = useCssModule('collapse')
 const contentId = useId()
 
 const isExpanded = ref(false)
@@ -27,7 +26,7 @@ function onClickButton(_e: MouseEvent) {
 }
 </script>
 
-<style lang="scss" module="collapse">
+<style lang="scss" scoped>
 .expand_button {
 	width: 183px;
 	font-size: 12px;
