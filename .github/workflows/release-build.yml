@@ -1,19 +1,14 @@
-name: Build Userscript
+name: Build and release Userscript
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       version_tag:
         required: true
         type: string
-        default: v0.0.0
       dist_file_name:
-        required: true
         type: string
         default: d-fav-coupon-filter
-
-permissions:
-  contents: write
 
 jobs:
   build_and_release:

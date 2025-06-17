@@ -1,0 +1,12 @@
+name: Auto release
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  release:
+    uses: ./.github/workflows/release-build.yml
+    with:
+      version_tag: ${{ github.ref_name }}
