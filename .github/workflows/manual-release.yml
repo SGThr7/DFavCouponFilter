@@ -18,3 +18,5 @@ jobs:
     with:
       version_tag: ${{ inputs.version_tag }}
       dist_file_name: ${{ inputs.dist_file_name }}
+    permissions:
+      contents: write

@@ -10,3 +10,5 @@ jobs:
     uses: ./.github/workflows/release-build.yml
     with:
       version_tag: ${{ github.ref_name }}
+    permissions:
+      contents: write
