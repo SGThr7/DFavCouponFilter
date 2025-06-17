@@ -15,8 +15,10 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  build_and_release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -24,19 +26,6 @@ jobs:
           node-version: 22
       - run: npm ci
       - run: npm run build
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: npm ci
       - run: gh release create ${{ inputs.version_tag }} --draft --generate-notes dist/${{ inputs.dist_file_name }}.user.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
