@@ -1,0 +1,42 @@
+name: Build and release Userscript
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'v[major].[minor].[patch]'
+        type: choice
+        options: [major, minor, patch, none]
+        default: 'patch'
+        required: true
+
+jobs:
+  build_release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Git account settings
+        if: ${{ github.event.inputs.bump_type != 'none' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Update version
+        if: ${{ github.event.inputs.bump_type != 'none' }}
+        run: |
+          npm version ${{ github.event.inputs.bump_type }}
+          echo VERSION=$(node -p "require('./package.json').version") >> $GITHUB_ENV
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Publish new version
+        run: gh release create ${VERSION} --generate-notes dist/*.user.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
