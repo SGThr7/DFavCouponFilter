@@ -1,4 +1,4 @@
-import { ProductId } from "./product"
+import { ProductId, WorkType } from "./product"
 import { SiteId_Lower, SiteId_Snake } from "./site"
 
 export type CouponId = string
@@ -76,6 +76,7 @@ type ConditionType =
 	| 'custom_genre'
 	| 'id_all'
 	| 'site_ids'
+	| 'worktype'
 
 /** 値引きの計算方法 */
 export type DiscountType = 'rate' | 'price'
@@ -99,6 +100,7 @@ type Coupon_Conditions =
 	| Coupon_Conditions_CustomGenre
 	| Coupon_Conditions_IdAll
 	| Coupon_Conditions_SiteIds
+	| Coupon_Conditions_WorkType
 
 interface Coupon_Conditions_Base {
 	condition_type: ConditionType
@@ -120,7 +122,12 @@ interface Coupon_Conditions_SiteIds extends Coupon_Conditions_Base {
 	conditions: Condition_SiteIds
 }
 
-type Conditions = Conditions_CustomGenre | Condition_ProductAll | Condition_SiteIds
+interface Coupon_Conditions_WorkType extends Coupon_Conditions_Base {
+	condition_type: 'worktype'
+	conditions: Condition_WorkType
+}
+
+type Conditions = Conditions_CustomGenre | Condition_ProductAll | Condition_SiteIds | Condition_WorkType
 
 interface Conditions_CustomGenre {
 	custom_genre: string[]
@@ -136,6 +143,19 @@ interface Condition_SiteIds {
 	platform: string
 	price_sum: number
 	maximum_applicable_price: string
+}
+
+interface Condition_WorkType {
+	maximum_applicable_price: string
+	options: unknown[]
+	platform: Platform
+	price_sum: number
+	site_ids: SiteId_Lower[]
+	worktype: WorkType
+}
+
+const enum Platform {
+	Both = 'both',
 }
 
 interface Prerequisite {

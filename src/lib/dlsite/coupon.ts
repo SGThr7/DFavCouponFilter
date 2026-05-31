@@ -35,6 +35,14 @@ export class DCoupon {
 		return limitDate
 	}
 
+	getInfo(): Coupon {
+		return this.info
+	}
+
+	toString(): string {
+		return `DCoupon(id=${this.getId()}, name=${this.getName()}, discount=${this.getDiscountType()} ${this.getDiscountRate()}%, limitDate=${this.getUseLimitDate()})`
+	}
+
 	/**
 	 * @returns 有効なクーポンかどうか
 	 */
@@ -68,7 +76,19 @@ export class DCoupon {
 			}
 			case 'site_ids': {
 				const pSiteId = await product.getSiteId()
-				return this.info.conditions.site_ids?.includes(pSiteId) ?? false
+				const pPrice = await product.getPrice()
+				const allowedSiteId = this.info.conditions.site_ids?.includes(pSiteId) ?? false
+				const maxPrice = parseInt(this.info.conditions.maximum_applicable_price)
+				const allowedPrice = pPrice <= maxPrice
+				return allowedSiteId && allowedPrice
+			}
+			case 'worktype': {
+				const pWorkType = await product.getWorkType()
+				const pPrice = await product.getPrice()
+				const allowedWorkType = this.info.conditions.worktype.includes(pWorkType) ?? false
+				const maxPrice = parseInt(this.info.conditions.maximum_applicable_price)
+				const allowedPrice = pPrice <= maxPrice
+				return allowedWorkType && allowedPrice
 			}
 		}
 

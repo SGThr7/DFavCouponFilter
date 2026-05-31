@@ -42,12 +42,24 @@ export async function fetchProductInfos(productIds: ProductId[]): Promise<Produc
 
 export function parseProductId(content: HTMLElement) {
 	const contentInfoDom = content.querySelector('dl.work_1col')
-	const contentUrlRaw = contentInfoDom?.querySelector('a')?.getAttribute('href')
+	const contentUrlRaw = contentInfoDom?.querySelector('.work_name a')?.getAttribute('href')
 	if (contentUrlRaw == null) {
 		console.error('Content URL not found', content)
 		return null
 	}
-	const contentUrl = new URL(contentUrlRaw)
+
+	const contentUrl = (() => {
+		try {
+			const contentUrl = new URL(contentUrlRaw)
+			return contentUrl
+		} catch (e) {
+			return null
+		}
+	})()
+	if (contentUrl == null) {
+		console.error(`Failed to parse content URL: ${contentUrlRaw}`, content)
+		return null
+	}
 
 	const productId = contentUrl.pathname.split('/').at(-1)?.split('.').at(0)
 	if (productId == null) {

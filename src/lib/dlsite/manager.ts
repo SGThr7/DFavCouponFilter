@@ -208,12 +208,14 @@ export class DPCManager {
 	 * @returns 作品DOMのIterator
 	 */
 	static collectProductDoms(container: ParentNode) {
-		const products = container.querySelectorAll<HTMLElement>('form#edit_wishlist > div#wishlist_work > table.n_worklist > tbody > tr._favorite_item')
+		const products = container.querySelectorAll<HTMLElement>('form#edit_wishlist > div#wishlist_work > div > article')
+		console.dir(products)
 
 		const productDomsIter = products
 			.values()
 			.map<[ProductId, HTMLElement] | null>(content => {
 				const product_id = parseProductId(content)
+				console.log(`product_id: ${product_id}`, content)
 				if (product_id == null) {
 					console.error('Failed to find product ID', content)
 					return null
@@ -266,6 +268,12 @@ export class DPCManager {
 				.map(coupon => new DCoupon(coupon))
 				.filter(coupon => coupon.isAvailable())
 			this.coupons = new Set(couponIter)
+
+			{
+				console.groupCollapsed('Fetched coupons')
+				this.coupons.forEach(coupon => console.log(coupon.getInfo()))
+				console.groupEnd()
+			}
 
 			const discountableCouponsMapIter = Iterator.from(this.coupons.values())
 				.map(coupon => [coupon.getId(), new Set()] as [CouponId, Set<ProductId>])

@@ -287,7 +287,8 @@ type CurrencyPrice = {
 }
 
 // 過不足がある可能性あり
-const enum WorkType {
+export const enum WorkType {
+	Unknown = '',
 	MNG = 'MNG',
 	SOU = 'SOU',
 	comic = 'comic',

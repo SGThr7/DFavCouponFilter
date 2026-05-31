@@ -1,4 +1,4 @@
-import { ProductInfo, ProductId } from '@/type/dlsite/product'
+import { ProductInfo, ProductId, WorkType } from '@/type/dlsite/product'
 import { fetchProductInfo } from '@/lib/dlsite/utils'
 import { parseId, parseTitle } from './product/utils'
 import { SiteId_Lower } from '@/type/dlsite/site'
@@ -56,11 +56,11 @@ export class DProduct {
 	// MARK: DOM操作
 
 	isVisible(): boolean {
-		return !this.dom.hidden
+		return !this.dom.classList.contains('dfc-hidden')
 	}
 
 	setIsVisible(isVisible: boolean) {
-		this.dom.hidden = !isVisible
+		this.dom.classList.toggle('dfc-hidden', !isVisible)
 	}
 
 	// MARK: Info (async)
@@ -119,6 +119,26 @@ export class DProduct {
 	getSiteIdCache(): SiteId_Lower | undefined {
 		console.assert(this.info != null, 'Product info has not been fetched yet')
 		return this.info?.site_id
+	}
+
+	async getWorkType(): Promise<WorkType> {
+		await this.asyncFetchInfo()
+		return this.getWorkTypeCache()
+	}
+
+	getWorkTypeCache(): WorkType {
+		console.assert(this.info != null, 'Product info has not been fetched yet')
+		return this.info?.work_type ?? WorkType.Unknown
+	}
+
+	async getPrice(): Promise<number> {
+		await this.asyncFetchInfo()
+		return this.getPriceCache()
+	}
+
+	getPriceCache(): number {
+		console.assert(this.info != null, 'Product info has not been fetched yet')
+		return this.info?.price ?? 0
 	}
 
 	getDom(): HTMLElement {
