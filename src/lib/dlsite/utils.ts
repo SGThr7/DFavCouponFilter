@@ -41,8 +41,7 @@ export async function fetchProductInfos(productIds: ProductId[]): Promise<Produc
 }
 
 export function parseProductId(content: HTMLElement) {
-	const contentInfoDom = content.querySelector('dl.work_1col')
-	const contentUrlRaw = contentInfoDom?.querySelector('.work_name a')?.getAttribute('href')
+	const contentUrlRaw = content.querySelector('.work_name a')?.getAttribute('href')
 	if (contentUrlRaw == null) {
 		console.error('Content URL not found', content)
 		return null

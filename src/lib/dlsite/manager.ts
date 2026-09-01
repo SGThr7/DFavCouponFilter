@@ -208,11 +208,12 @@ export class DPCManager {
 	 * @returns 作品DOMのIterator
 	 */
 	static collectProductDoms(container: ParentNode) {
-		const products = container.querySelectorAll<HTMLElement>('form#edit_wishlist > div#wishlist_work > div > article')
+		const listProducts = container.querySelectorAll<HTMLElement>('div#wishlist_work > div.one_column_work_list > article.one_column_work_item')
+		const gridProducts = container.querySelectorAll<HTMLElement>('div#wishlist_work > ul.n_worklist > li')
+		const products = Iterator.concat(listProducts, gridProducts)
 		console.dir(products)
 
 		const productDomsIter = products
-			.values()
 			.map<[ProductId, HTMLElement] | null>(content => {
 				const product_id = parseProductId(content)
 				console.log(`product_id: ${product_id}`, content)
